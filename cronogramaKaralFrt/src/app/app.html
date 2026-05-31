@@ -5,6 +5,7 @@
     <p>Sistema completo de gestión de horarios</p>
   </div>
 
+
   <div class="controls">
     <div class="input-group">
       <div class="input-wrapper">
@@ -26,35 +27,8 @@
     </div>
   </div>
 
+  <!-- Calendario con Leyenda y Estadísticas -->
   <app-calendario></app-calendario>
-
-    <!-- Leyenda -->
-    <div class="legend">
-      <h3>HORARIOS</h3>
-      <div class="legend-grid">
-        <div class="legend-item legend-dia">
-          <span class="legend-emoji">☀️</span>
-          <div class="legend-text">
-            <strong>Turno Día</strong>
-            <span>11:00 - 18:00</span>
-          </div>
-        </div>
-        <div class="legend-item legend-noche">
-          <span class="legend-emoji">🌙</span>
-          <div class="legend-text">
-            <strong>Turno Noche</strong>
-            <span>18:00 - 22:00</span>
-          </div>
-        </div>
-        <div class="legend-item legend-medio">
-          <span class="legend-emoji">⏰</span>
-          <div class="legend-text">
-            <strong>Medio Turno</strong>
-            <span>12:00 - 16:00</span>
-          </div>
-        </div>
-      </div>
-    </div>
 
   <!-- Cronograma Principal -->
   <div class="cronograma-container" #cronogramaContent>
@@ -163,7 +137,7 @@
 
   <!-- Resumen -->
   <div class="resumen">
-    <h3>RESUMEN</h3>
+    <h3>RESUMEN POR EMPLEADO</h3>
     <div class="resumen-grid">
       @for (empleado of empleados(); track empleado.id) {
         <div class="resumen-item">

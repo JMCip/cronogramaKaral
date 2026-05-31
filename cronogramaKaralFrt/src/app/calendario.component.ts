@@ -115,6 +115,7 @@ interface DiaCalendario {
       border-radius: 16px;
       padding: 32px 24px;
       margin-top: 40px;
+      margin-bottom: 60px;
       box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
     }
 
@@ -318,22 +319,25 @@ interface DiaCalendario {
       font-size: 18px;
     }
 
-    .legend-item.turno-día {
+    .legend-item.turno-dia {
       background: #dbeafe;
       border-color: #60a5fa;
       color: #1e40af;
+      box-shadow: 0 4px 6px rgba(96, 165, 250, 0.2);
     }
 
     .legend-item.turno-noche {
       background: #e0e7ff;
       border-color: #818cf8;
       color: #3730a3;
+      box-shadow: 0 4px 6px rgba(129, 140, 248, 0.2);
     }
 
     .legend-item.turno-medio {
       background: #dcfce7;
       border-color: #22c55e;
       color: #166534;
+      box-shadow: 0 4px 6px rgba(34, 197, 94, 0.2);
     }
 
     .calendario-stats {
