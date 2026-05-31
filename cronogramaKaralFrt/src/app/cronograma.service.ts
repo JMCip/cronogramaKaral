@@ -19,7 +19,8 @@ export interface Empleado {
   providedIn: 'root'
 })
 export class CronogramaService {
-  private empleados = signal<Empleado[]>([
+  private readonly STORAGE_KEY = 'cronograma_empleados';
+  private readonly DEFAULT_EMPLEADOS: Empleado[] = [
     {
       id: 1,
       nombre: 'Juandi',
@@ -59,13 +60,41 @@ export class CronogramaService {
         domingo: ['medio']
       }
     }
-  ]);
+  ];
+
+  private empleados = signal<Empleado[]>(this.cargarDelStorage());
 
   public readonly empleadosSignal = this.empleados.asReadonly();
   public readonly dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
   public readonly diasCapitalizados = ['LUNES', 'MARTES', 'MIÉRCOLES', 'JUEVES', 'VIERNES', 'SÁBADO', 'DOMINGO'];
 
   constructor() {}
+
+  /**
+   * Cargar datos del LocalStorage o retornar los datos por defecto
+   */
+  private cargarDelStorage(): Empleado[] {
+    try {
+      const datosGuardados = localStorage.getItem(this.STORAGE_KEY);
+      if (datosGuardados) {
+        return JSON.parse(datosGuardados);
+      }
+    } catch (error) {
+      console.error('Error al cargar datos del localStorage:', error);
+    }
+    return JSON.parse(JSON.stringify(this.DEFAULT_EMPLEADOS));
+  }
+
+  /**
+   * Guardar datos en LocalStorage
+   */
+  private guardarEnStorage(empleados: Empleado[]): void {
+    try {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(empleados));
+    } catch (error) {
+      console.error('Error al guardar datos en localStorage:', error);
+    }
+  }
 
   agregarEmpleado(nombre: string): void {
     if (nombre.trim()) {
@@ -81,13 +110,17 @@ export class CronogramaService {
         horarios: horariosVacios
       };
 
-      this.empleados.update(empleados => [...empleados, nuevoEmpleado]);
+      this.empleados.update(empleados => {
+        const nuevosEmpleados = [...empleados, nuevoEmpleado];
+        this.guardarEnStorage(nuevosEmpleados);
+        return nuevosEmpleados;
+      });
     }
   }
 
   agregarTurno(idEmpleado: number, dia: string, tipo: string): void {
-    this.empleados.update(empleados =>
-      empleados.map(emp =>
+    this.empleados.update(empleados => {
+      const nuevosEmpleados = empleados.map(emp =>
         emp.id === idEmpleado
           ? {
             ...emp,
@@ -99,13 +132,15 @@ export class CronogramaService {
             }
           }
           : emp
-      )
-    );
+      );
+      this.guardarEnStorage(nuevosEmpleados);
+      return nuevosEmpleados;
+    });
   }
 
   eliminarTurno(idEmpleado: number, dia: string, tipo: string): void {
-    this.empleados.update(empleados =>
-      empleados.map(emp =>
+    this.empleados.update(empleados => {
+      const nuevosEmpleados = empleados.map(emp =>
         emp.id === idEmpleado
           ? {
             ...emp,
@@ -115,12 +150,18 @@ export class CronogramaService {
             }
           }
           : emp
-      )
-    );
+      );
+      this.guardarEnStorage(nuevosEmpleados);
+      return nuevosEmpleados;
+    });
   }
 
   eliminarEmpleado(idEmpleado: number): void {
-    this.empleados.update(empleados => empleados.filter(emp => emp.id !== idEmpleado));
+    this.empleados.update(empleados => {
+      const nuevosEmpleados = empleados.filter(emp => emp.id !== idEmpleado);
+      this.guardarEnStorage(nuevosEmpleados);
+      return nuevosEmpleados;
+    });
   }
 
   obtenerEmpleados(): Empleado[] {
@@ -133,6 +174,24 @@ export class CronogramaService {
 
   importarJSON(datos: Empleado[]): void {
     this.empleados.set(datos);
+    this.guardarEnStorage(datos);
+  }
+
+  /**
+   * Restaurar datos por defecto y limpiar el localStorage
+   */
+  restaurarDatosDefecto(): void {
+    const datosDefecto = JSON.parse(JSON.stringify(this.DEFAULT_EMPLEADOS));
+    this.empleados.set(datosDefecto);
+    this.guardarEnStorage(datosDefecto);
+  }
+
+  /**
+   * Limpiar todos los datos
+   */
+  limpiarTodo(): void {
+    this.empleados.set([]);
+    localStorage.removeItem(this.STORAGE_KEY);
   }
 
   obtenerHoras(tipo: string): string {
